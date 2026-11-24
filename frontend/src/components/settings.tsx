@@ -63,7 +63,8 @@ export function SettingsView() {
         />
         <p className="muted">
           Configuration checks show whether the API has connection settings.
-          They do not run a model or execute code.
+          They do not run a model or execute code. Hosted jobs use the configured
+          laptop worker, which must remain running and connected to the internet.
         </p>
         {[
           ["Database & authentication", health?.database_configured],

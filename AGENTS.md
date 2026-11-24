@@ -26,7 +26,7 @@
 - Worker only: `.runtime/worker.env` with `WORKER_TOKEN`, or `SUPABASE_SECRET_KEY`; model and executor settings are described in backend `.env.example`.
 - User chose the existing Supabase project `wpjxohdwrwcjeunspjce` and a local OpenAI-compatible inference server. Do not create another project or substitute a billed AI provider.
 - Unsloth Studio was discovered on local port 8888. Use `MODEL_RUNTIME=unsloth` to disable its built-in tools explicitly. `uv run python -m app.check_model` discovers model IDs without exposing keys; `--smoke` validates synthetic streaming feedback. A checksum-verified Unsloth Qwen3.5-4B model is now served by a local llama.cpp process on port 8001; that endpoint uses `MODEL_RUNTIME=openai`.
-- Vercel project root is `frontend`. FastAPI Cloud app root is `backend`. Deploying the API does not deploy the queue worker, GPU model, or isolated executor.
+- Vercel project root is the repository root; `vercel.json` deploys frontend and backend Services together. Set `WORKER_MODE=external` on the hosted API only. Its worker consumes the shared Supabase queue from the laptop. FastAPI Cloud remains an optional standalone backend target. Neither HTTP deployment starts the worker, model or isolated executor.
 - Use Supabase CLI to create migration filenames. Apply DDL via migrations. Run the reversible SQL tests after changing authorization or queue behavior.
 - Audit results and deployment limitations are recorded in `docs/VERIFICATION.md`. Never describe an unconfigured dependency as working.
 

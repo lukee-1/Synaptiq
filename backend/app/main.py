@@ -68,6 +68,6 @@ async def health() -> Health:
         database_configured=bool(
             settings.supabase_url and settings.supabase_publishable_key
         ),
-        model_configured=bool(settings.model_name),
-        executor_configured=bool(settings.executor_url),
+        model_configured=settings.model_jobs_configured,
+        executor_configured=settings.execution_jobs_configured,
     )

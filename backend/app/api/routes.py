@@ -99,7 +99,7 @@ async def sessions(
 
 @router.post("/sessions", response_model=Session, status_code=201)
 async def start_session(body: StartSession, db: DB) -> Session:
-    if body.mode == "assessment" and not get_settings().executor_url:
+    if body.mode == "assessment" and not get_settings().execution_jobs_configured:
         raise HTTPException(
             503, "Configure the isolated executor before starting a timed assessment"
         )
@@ -170,9 +170,9 @@ async def hint(session_id: UUID, db: DB) -> Session:
 @router.post("/sessions/{session_id}/runs", response_model=Run, status_code=202)
 async def create_run(session_id: UUID, body: CreateRun, db: DB) -> Run:
     settings = get_settings()
-    if body.operation == "explain" and not settings.model_name:
+    if body.operation == "explain" and not settings.model_jobs_configured:
         raise HTTPException(503, "Connect a model before requesting AI feedback")
-    if body.operation != "explain" and not settings.executor_url:
+    if body.operation != "explain" and not settings.execution_jobs_configured:
         raise HTTPException(503, "The isolated code executor is not configured")
     value = await db.rpc(
         "enqueue_run",
@@ -422,7 +422,7 @@ async def inspect_file(file_id: UUID, db: DB) -> list[Finding]:
 
 @router.post("/projects/{project_id}/chat", response_model=ChatTurn, status_code=202)
 async def project_chat(project_id: UUID, body: ChatRequest, db: DB) -> ChatTurn:
-    if not get_settings().model_name:
+    if not get_settings().model_jobs_configured:
         raise HTTPException(503, "Connect a model before starting project chat")
     return ChatTurn.model_validate(
         await db.request(

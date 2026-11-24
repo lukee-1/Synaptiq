@@ -1,71 +1,47 @@
 # Deployment runbook
 
-## Current account state
+## Selected deployment
 
-- Supabase `wpjxohdwrwcjeunspjce` is restored and ACTIVE_HEALTHY. All five SQL migrations in this repository are applied. Keep this target; the user chose it explicitly.
-- The public repository is https://github.com/lukee-1/Synaptiq. Publishing source does not deploy the application.
-- Vercel is connected, but the selected team still requires a consent grant before its projects can be inspected. No project was created or deployed.
-- On 19 November, the Vercel connector's team listing returned no accessible teams. Restore the intended team's access before deployment.
-- FastAPI Cloud CLI is installed through `fastapi[standard]`; `whoami --json` returned `not_logged_in`. No cloud app is linked.
+The public source is [lukee-1/Synaptiq](https://github.com/lukee-1/Synaptiq). The existing Supabase project `wpjxohdwrwcjeunspjce` has all five migrations applied. Do not reset it.
 
-## Release order
+The selected arrangement hosts Next.js and FastAPI together on Vercel. The laptop continues running the model, isolated executor and queue worker. Jobs travel through Supabase; no public laptop tunnel is used. The laptop must stay awake, online and running `scripts/preview.ps1` for AI guidance, repairs, reasoning ratings and code tests. Queued work is not evidence that the worker is online.
 
-1. Push this repository to the intended GitHub remote and require the `Validate Synaptiq` check before merging.
-2. Run SQL tests against a staging project, then apply reviewed forward migrations. Never reset the restored project. The existing migrations have already been applied through the Supabase connector; reconcile remote migration history before using `db push` from a newly linked CLI checkout.
-3. Configure the separate queue worker, local/hosted model connection and private executor. Confirm their health and run a complete evaluation before enabling production assessments.
-4. Deploy the API to FastAPI Cloud, then the frontend to a Vercel preview. Complete the release checks below before routing production traffic.
+[Vercel Services](https://vercel.com/docs/services) is currently beta. Import this repository with **Root Directory = repository root**, Node **24.x**. Root `vercel.json` builds `frontend` and `backend` separately. `/v1/*` and `/health` go to FastAPI; all other paths go to Next.js. Deployments and rollbacks keep both components together. `frontend/vercel.json` remains useful for a standalone frontend deployment.
 
-## FastAPI Cloud
+## Environment
 
-The app directory is `backend`; `pyproject.toml` declares `app.main:app`. `.fastapicloudignore` excludes environment files, virtualenvs, test caches and the sandbox service.
+Use the following project variables for production and each intended preview:
 
-```sh
-cd backend
-uv run fastapi cloud whoami --json
-# Interactive account setup, performed when ready to deploy:
-uv run fastapi cloud auth login --no-open --json
-uv run fastapi cloud teams list --json
-uv run fastapi cloud apps list --team-id TEAM_ID --json
-# Create/link the chosen app, then configure its environment through the platform.
-uv run fastapi cloud deploy . --app-id APP_ID --json
-uv run fastapi cloud deployments get DEPLOYMENT_ID --app-id APP_ID --json
-```
+| Variable | Value |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Existing project's HTTPS URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key only |
+| `SUPABASE_URL` | Same project URL |
+| `SUPABASE_PUBLISHABLE_KEY` | Same publishable key |
+| `APP_ENV` | `production` |
+| `WORKER_MODE` | `external` |
+| `ALLOWED_ORIGINS` | JSON array containing the exact HTTPS frontend origin |
 
-Set `APP_ENV=production`, exact HTTPS frontend origins in `ALLOWED_ORIGINS`, Supabase URL/publishable key, and reachable service addresses. Never give the HTTP API the worker service-role secret. A process manager must run `python -m app.workers.main` separately; deployment of the HTTP app does not start it. The supplied Dockerfile can run the worker with an overridden command.
+Omit `NEXT_PUBLIC_API_URL` for same-origin routing. Set it to `http://127.0.0.1:8000` only for separate local development. Leave `NEXT_PUBLIC_SITE_URL` unset on Vercel so callbacks use the request origin. Do not copy local worker, model or executor credentials, or a Supabase secret/service-role key, into the hosted API. It operates with each caller's verified Supabase token.
 
-FastAPI Cloud's generated deployment workflow can be inspected with `uv run fastapi cloud ci print-workflow --json` after linking. Its CI setup creates a deploy token and GitHub secrets, so this repository contains verification CI only until an app and repository are selected.
+Keep the laptop worker's `WORKER_MODE=local`, existing private inference/executor URLs and scoped worker credential. External mode on the hosted API advertises configured queue capabilities; it does not assert worker liveness. The Settings screen explains this distinction.
 
-## Vercel
+Rebuild after changing public variables. Add the production `/auth/callback` and `/reset` URLs to Supabase Authentication URL Configuration, preserving approved local callbacks. Set Site URL to the production origin. GitHub OAuth requires its own provider configuration; do not present it as tested until completed.
 
-Import the selected GitHub repository with **Root Directory = `frontend`**, framework Next.js, Node **24.x**, install `npm ci`, build `npm run build`. `frontend/vercel.json` contains portable project settings; root directory belongs in Vercel project configuration.
+## Verification and rollback
 
-Set these for each preview/production environment:
+1. Require the GitHub `Validate Synaptiq` workflow. It includes contracts, typing, lint, backend/frontend tests, sandbox/catalog execution and a production frontend build.
+2. Confirm hosted `/health`, catalog, login/signup, unauthenticated workspace redirect and invalid-token denial.
+3. With the laptop worker running, sign in, import a fixture, request a repair, apply/Undo it, run a challenge and submit written reasoning. Verify persisted results after refresh.
+4. Exercise email confirmation/recovery on the production origin; verify that no callback redirects to localhost.
+5. Keep migration history forward-only. Roll back application deployments through Vercel; never reset user data as a rollback strategy.
 
-| Name                                   | Value                           |
-| -------------------------------------- | ------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Existing Supabase project's URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key only            |
-| `NEXT_PUBLIC_API_URL`                  | Public HTTPS FastAPI origin     |
+Current verification and remaining gaps are recorded in [VERIFICATION.md](VERIFICATION.md). This is a demonstration deployment, not a claim of unattended availability or validated learning outcomes. Wider model evaluation, load/abuse testing, backups/recovery and monitoring remain release work.
 
-Rebuild after changing public variables because Next.js includes them at build time. The API CORS allowlist must match the exact preview or production origin. Do not use `*` for private authenticated traffic.
+## Optional separate hosting
 
-Set the Supabase site URL and allowed redirects for `/auth/callback` and `/reset` on each approved origin. GitHub OAuth additionally needs a configured GitHub OAuth application and its Supabase callback. Email confirmation/recovery require working delivery and appropriate rate limits.
+FastAPI Cloud can deploy `backend` using its declared `app.main:app` entrypoint. The frontend then needs the API HTTPS URL and exact CORS configuration. No FastAPI Cloud deployment has been created. A future always-on worker/model/executor needs separately provisioned compute; an HTTP deployment alone does not supply it.
 
-## Release checks
+## Database advisor context
 
-- Fresh browser: unauthenticated `/workspace` redirects; sign in, refresh and sign out work; expired/revoked sessions fail closed.
-- Two users: neither can read or modify the other's projects, runs, events or reflections. Supplied rollback SQL tests already exercise these database boundaries.
-- Save source, run checks, edit again: old results remain bound to their original revision; stale writes return conflict.
-- Disconnect/reconnect SSE: persisted events resume; completed results remain available. Stop a worker mid-job and verify lease recovery.
-- Assessment: hidden scores stay private until submission; deadline locks edits and worker enqueues exactly one final run.
-- Run actual gVisor network/filesystem/CPU isolation probes before accepting public submissions. Pin a reviewed sandbox image digest and scan it.
-- Verify model guidance using representative repairs, malformed output and attempted prompt injection. Never treat an LLM opinion as executed test evidence.
-- Set backup retention, event/run retention, quotas, monitoring, alerting and recovery procedures for the expected traffic. The current per-user run limiter is a baseline, not a complete abuse-prevention system.
-
-## Advisor review
-
-Supabase reports authenticated GraphQL schema discoverability for the ten readable public tables. This is expected with authenticated SELECT grants; row access remains constrained by tested RLS. Review [the GraphQL discoverability notice](https://supabase.com/docs/guides/database/database-linter?lint=0027_pg_graphql_authenticated_table_exposed) if schema names themselves must be private.
-
-The private job table has RLS and no policies, deliberately denying direct access. Work happens only through restricted security-definer functions. See [RLS enabled without policies](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy). These notices are recorded rather than represented as an entirely clean advisor report.
-
-Reference: [Vercel GitHub deployment](https://vercel.com/docs/git/vercel-for-github), [FastAPI Cloud](https://fastapicloud.com/).
+Authenticated GraphQL schema discoverability for readable tables is expected with authenticated SELECT grants; row ownership is constrained by tested RLS. Private job tables deliberately deny direct access and use restricted functions. Review account-level password protection and backup settings before broad public use. See [Supabase's GraphQL notice](https://supabase.com/docs/guides/database/database-linter?lint=0027_pg_graphql_authenticated_table_exposed) and [RLS without policies](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy).

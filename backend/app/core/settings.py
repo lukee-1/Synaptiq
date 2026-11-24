@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     supabase_publishable_key: str = ""
     supabase_secret_key: SecretStr = SecretStr("")
     worker_token: SecretStr = SecretStr("")
+    worker_mode: Literal["local", "external"] = "local"
     model_base_url: str = "http://127.0.0.1:8001/v1"
     model_runtime: Literal["openai", "unsloth"] = "openai"
     model_name: str = ""
@@ -22,6 +23,14 @@ class Settings(BaseSettings):
     executor_url: str = ""
     executor_token: SecretStr = SecretStr("")
     worker_poll_seconds: float = Field(default=2, ge=0.1, le=60)
+
+    @property
+    def model_jobs_configured(self) -> bool:
+        return self.worker_mode == "external" or bool(self.model_name)
+
+    @property
+    def execution_jobs_configured(self) -> bool:
+        return self.worker_mode == "external" or bool(self.executor_url)
 
     @model_validator(mode="after")
     def validate_origins(self) -> "Settings":

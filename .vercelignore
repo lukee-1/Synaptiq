@@ -1,0 +1,10 @@
+**/.runtime/**
+**/.env*
+**/.venv/**
+**/node_modules/**
+**/.next/**
+**/__pycache__/**
+docs/
+supabase/
+backend/tests/
+backend/executor/

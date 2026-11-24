@@ -5,11 +5,12 @@ export function publicEnvironment() {
     .object({
       supabaseUrl: z.url(),
       supabaseKey: z.string().min(1),
-      apiUrl: z.url(),
+      // An empty base uses this deployment's /v1 and /health routes.
+      apiUrl: z.union([z.literal(""), z.url({ protocol: /^https?$/ })]),
     })
     .safeParse({
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-      apiUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000",
+      apiUrl: process.env.NEXT_PUBLIC_API_URL ?? "",
     });
 }
