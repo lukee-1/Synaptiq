@@ -1,0 +1,31 @@
+begin;
+insert into auth.users(id,email) values('00000000-0000-4000-8000-000000000191','synaptiq-lanes@example.invalid');
+create temporary table f(k text primary key,v jsonb);
+grant all on f to authenticated,service_role;
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000191","role":"authenticated"}',true);
+insert into f values('w',public.synaptiq_action('bootstrap','{}'));
+insert into f values('s',public.synaptiq_action('start_session',jsonb_build_object('p_workspace',(select v->>'id' from f where k='w'),'p_challenge','INT-01-1-1','p_code','code','p_mode','practice','p_assistance',true)));
+select public.synaptiq_action('enqueue_run',jsonb_build_object('p_session',(select v->>'id' from f where k='s'),'p_revision',1,'p_operation','explain','p_key',gen_random_uuid()));
+select public.synaptiq_action('enqueue_run',jsonb_build_object('p_session',(select v->>'id' from f where k='s'),'p_revision',1,'p_operation','test','p_key',gen_random_uuid()));
+insert into f values('a',public.synaptiq_action('start_session',jsonb_build_object('p_workspace',(select v->>'id' from f where k='w'),'p_challenge','INT-01-1-1','p_code','code','p_mode','assessment','p_assistance',false)));
+reset role;
+set local role service_role;
+do $$ declare result jsonb; begin
+  result:=public.synaptiq_worker('claim','{"lane":"grading"}');
+  if result->'run'->>'operation'<>'test' then raise exception 'FAIL grading blocked by tutor'; end if;
+  if public.synaptiq_worker('claim','{"lane":"grading"}') is not null then raise exception 'FAIL grading claimed tutor'; end if;
+  result:=public.synaptiq_worker('claim','{"lane":"explain"}');
+  if result->'run'->>'operation'<>'explain' then raise exception 'FAIL tutoring lane'; end if;
+end $$;
+reset role;
+update public.synaptiq_sessions set deadline=now()-interval '1 second' where id=(select (v->>'id')::uuid from f where k='a');
+set local role service_role;
+select public.synaptiq_worker('sweep','{}');
+reset role;
+do $$ begin
+  if (select status from public.synaptiq_sessions where id=(select (v->>'id')::uuid from f where k='a'))<>'submitted' then raise exception 'FAIL sweep missed deadline'; end if;
+  if not exists(select 1 from public.synaptiq_runs where session_id=(select (v->>'id')::uuid from f where k='a') and operation='submit' and status='queued') then raise exception 'FAIL sweep claimed work'; end if;
+end $$;
+select 'PASS: grading/tutor isolation and independent deadline sweep' as result;
+rollback;

@@ -1,0 +1,422 @@
+[
+  {
+    "topic": "Arrays & Prefix Sums",
+    "title": "Indexing, ranges, cumulative state",
+    "overview": "A prefix array stores cumulative totals so an interval query becomes a subtraction. An invariant is a property that remains true at each iteration.",
+    "invariant": "Prefix[0] = 0; prefix[i+1] is the sum of the first i+1 items. A window [l,r] includes both endpoints.",
+    "pitfalls": "Check off-by-one boundaries, whether the running total is updated, and empty or single-element inputs.",
+    "complexity": "O(n) build and O(1) range queries; O(n) extra memory. Kadane’s maximum-subarray algorithm is O(n) time, O(1) space.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Hash Maps & Sets",
+    "title": "Fast membership and key/value mapping",
+    "overview": "Dictionaries and sets usually provide expected constant-time membership tests. Remember whether you need an index, a count, or a value.",
+    "invariant": "For complement search, check for target-value BEFORE adding the current value; an item must not pair with itself.",
+    "pitfalls": "Incorrect update order, duplicate keys, and forgetting to increment counts often break solutions.",
+    "complexity": "Expected O(n) time with O(n) auxiliary memory for complement/frequency patterns.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Two Pointers",
+    "title": "Converging indices and pointer invariants",
+    "overview": "Two pointers exploit ordering or symmetry. Track what each index represents and when it can safely advance.",
+    "invariant": "For sorted pair-sum, if total is too small move left forward; if too large move right backward.",
+    "pitfalls": "Watch off-by-one indices, incorrect pointer directions, skipping valid duplicates and bad loop boundaries.",
+    "complexity": "Typically O(n) time and O(1) extra memory after any required sorting.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Sliding Window",
+    "title": "Maintain a valid contiguous segment",
+    "overview": "A window reuses state instead of recomputing each subarray. Fixed windows keep size k; variable windows expand and shrink according to a constraint.",
+    "invariant": "Every expansion adds one element; a shrinking step must remove the element that leaves the window.",
+    "pitfalls": "Look for stale counts, incorrect left boundaries, window size errors and missing state cleanup.",
+    "complexity": "Often O(n) time because each pointer moves at most n steps; memory depends on tracked state.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Binary Search",
+    "title": "Ordered decisions and loop boundaries",
+    "overview": "Binary search halves a monotonic search space. Decide whether your answer is an exact index or the first feasible position.",
+    "invariant": "For lower_bound maintain [lo,hi); test mid and decide which half may still contain the answer.",
+    "pitfalls": "Common bugs are using wrong half, excluding a viable midpoint, and failing to terminate.",
+    "complexity": "O(log n) iterations, O(1) auxiliary space for iterative code.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Sorting & Intervals",
+    "title": "Order events before merging/scheduling",
+    "overview": "Sort by the field relevant to the invariant. Merging intervals compares the next start with the previous merged end.",
+    "invariant": "Overlapping intervals can be consolidated; equality counts as overlap when intervals are closed.",
+    "pitfalls": "Mixing up starts/ends or using a strict comparison at a shared endpoint is a common fault.",
+    "complexity": "Sorting dominates at O(n log n); merge pass O(n). Room-counting typically uses a heap.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Stacks & Queues",
+    "title": "LIFO/FIFO state and monotonic structures",
+    "overview": "A stack is last-in-first-out. A monotonic stack maintains an ordering that lets you find the next greater element efficiently.",
+    "invariant": "When processing a new value, pop prior unresolved smaller values until the invariant holds.",
+    "pitfalls": "Check which side of a comparison is strict, empty-stack cases, and mismatched bracket types.",
+    "complexity": "Most monotonic-stack algorithms take O(n) time and O(n) auxiliary space.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Linked Lists",
+    "title": "References, next pointers, and pointer safety",
+    "overview": "Linked-list nodes store values and references. Reversing a list requires saving the next pointer before changing the current link.",
+    "invariant": "Maintain previous, current and next references; never overwrite a link before preserving what follows.",
+    "pitfalls": "Look for lost references, head/tail errors, and fast/slow pointers moving at wrong speeds.",
+    "complexity": "Traversal/reversal are O(n) time; in-place reversal uses O(1) extra memory.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Trees & BST",
+    "title": "Recursive structure and subtree constraints",
+    "overview": "Trees are recursive. A binary-search tree requires every left descendant to be below its ancestor bound and every right descendant to be above it.",
+    "invariant": "Propagate lower and upper bounds while validating BSTs; compare both subtrees when computing height.",
+    "pitfalls": "A local parent-child check alone misses deeper BST violations; depth has a base-case boundary.",
+    "complexity": "O(n) traversal time; O(h) recursion space for tree height h.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Graphs",
+    "title": "Connectivity, traversal and visited state",
+    "overview": "BFS visits vertices in distance layers, making it suitable for shortest paths in unweighted graphs. DFS explores connected components.",
+    "invariant": "Mark a node visited when it is enqueued (or on entry), not after expanding it, to avoid duplicates.",
+    "pitfalls": "Watch queue discipline, missing visited updates and one-sided adjacency on undirected graphs.",
+    "complexity": "BFS/DFS run in O(V + E) time with O(V) auxiliary memory.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Dynamic Programming",
+    "title": "Overlapping subproblems and recurrence",
+    "overview": "Dynamic programming stores results for overlapping subproblems. Define the state and base cases before implementing transitions.",
+    "invariant": "For house robber: dp[i] = max(skip current, take current plus dp[i-2]).",
+    "pitfalls": "Incorrect base cases, wrong transition indices, and treating impossible states as zero create subtle bugs.",
+    "complexity": "Time and memory depend on state dimension; many one-dimensional problems use O(n) time.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Recursion & Backtracking",
+    "title": "Decision trees and restoration of state",
+    "overview": "Backtracking explores choices recursively, then undoes the choice before exploring another branch.",
+    "invariant": "A path snapshot should be copied when added to results; mutating a shared list changes previous results.",
+    "pitfalls": "Watch append/pop symmetry, base-case timing and duplicate exploration.",
+    "complexity": "Complexity is often exponential because many possibilities are explored; output size matters.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "String Algorithms",
+    "title": "Character scans and transformations",
+    "overview": "String tasks often use two pointers, frequency tables or run-length state. Define exact rules for case, spaces and delimiters.",
+    "invariant": "For run-length encoding, flush a group whenever the character changes, including the final group.",
+    "pitfalls": "Missing the final flush or off-by-one prefix bounds leads to errors.",
+    "complexity": "O(n) traversal time and O(n) output space for many transformations.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Heaps & Top K",
+    "title": "Priorities and bounded memory",
+    "overview": "A heap provides efficient access to the smallest element. For top-k largest items, a min-heap of size k retains the current best candidates.",
+    "invariant": "When a candidate exceeds the heap minimum, replace the minimum; ensure the result is extracted in the required order.",
+    "pitfalls": "Common errors include reversed comparisons, off-by-one k, and mixing min/max heap assumptions.",
+    "complexity": "Typical top-k selection is O(n log k) time with O(k) auxiliary space.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Bitwise & Memory",
+    "title": "Bit operations and aliasing behaviour",
+    "overview": "Bit masks represent binary flags compactly. Separate variable bindings from underlying mutable objects; an alias shares the same list.",
+    "invariant": "x & (x-1) removes the lowest set bit; copying a list makes later mutation independent of the source.",
+    "pitfalls": "Check truthiness vs bitwise logic, accidental object aliasing and incorrect shift boundaries.",
+    "complexity": "Bit counting is proportional to set bits; shallow list copy costs O(n) extra memory.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Greedy & Scheduling",
+    "title": "Local decisions and proof of optimality",
+    "overview": "Greedy algorithms make a local choice that should preserve an optimal final solution. The ordering criterion matters.",
+    "invariant": "Earliest-finishing interval selection leaves as much room as possible for later tasks.",
+    "pitfalls": "Choosing by start time instead of finish time or handling touching intervals incorrectly causes errors.",
+    "complexity": "Interval scheduling is O(n log n) from sorting; a scan after sorting is O(n).",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "API Contracts",
+    "title": "Boundaries are part of the API",
+    "overview": "Specify accepted inputs, defaults, output shape and failure behavior before implementing a route.",
+    "invariant": "A successful response satisfies the same schema on both sides of the network. Reject malformed values before mutation.",
+    "pitfalls": "Silent coercion, missing fields and leaking internal exceptions make clients unreliable.",
+    "complexity": "Validation is proportional to the input examined. Bound request work and paginate large responses.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Dates & Time Zones",
+    "title": "Compare instants, preserve local intent",
+    "overview": "A local clock reading and a global instant are different concepts. Use explicit time zones when interpreting dates.",
+    "invariant": "Normalize instants to a common timeline before comparing them. Preserve the intended zone for calendar events.",
+    "pitfalls": "Naive/aware mixtures, daylight-saving gaps and ambiguous local times need explicit handling.",
+    "complexity": "Parsing n timestamps is O(n); sorting them is O(n log n).",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Decimal Arithmetic",
+    "title": "Represent exact quantities deliberately",
+    "overview": "Binary floating-point cannot represent every decimal fraction exactly. Use a decimal representation for exact base-10 arithmetic.",
+    "invariant": "Construct decimal values from original decimal text and choose a rounding policy at the domain boundary.",
+    "pitfalls": "Converting an already rounded float to decimal does not recover its intended exact value. Rounding each intermediate step can accumulate errors.",
+    "complexity": "Cost depends on precision and operation count. Fixed precision arithmetic is often treated as constant cost.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Dynamic Programming & Search",
+    "title": "Name the state before searching it",
+    "overview": "Search explores possibilities; dynamic programming reuses results when the same subproblem occurs repeatedly.",
+    "invariant": "A memoization key must include every value that can change the answer for that subproblem.",
+    "pitfalls": "Incomplete keys, cycles, and confusing unreachable states with zero-cost states produce incorrect reuse.",
+    "complexity": "Time is the number of reachable states times the work per transition; space includes cached states and the call stack.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Events & Idempotency",
+    "title": "Repeated delivery, one intended effect",
+    "overview": "Networks retry and event delivery can repeat. Track a stable request identifier so repeating the same request does not repeat its effect.",
+    "invariant": "Recording the deduplication key and applying the effect must be one atomic operation.",
+    "pitfalls": "Deduplicating by payload alone can merge distinct events. Check that a reused key has the same meaning.",
+    "complexity": "Expected O(1) lookup per key with a hash map; retained keys require a deliberate expiration policy.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Graphs & Routing",
+    "title": "Paths depend on the cost model",
+    "overview": "BFS is appropriate for equal-cost edges. Weighted routing needs an algorithm whose assumptions match the edge weights.",
+    "invariant": "A relaxation only replaces a known distance when the new candidate improves it.",
+    "pitfalls": "Treating all edges as equal, finalizing a distance too early, and forgetting unreachable vertices distort routes.",
+    "complexity": "BFS is O(V+E). Heap-based Dijkstra is typically O((V+E) log V) for nonnegative weights.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Graphs & Scheduling",
+    "title": "Dependencies before dependants",
+    "overview": "Represent prerequisites as directed edges. A topological order exists only when the directed graph has no cycle.",
+    "invariant": "A task becomes ready only after all its prerequisites have been resolved.",
+    "pitfalls": "Reversing edges, losing duplicate dependency semantics, and ignoring unprocessed vertices can hide cycles.",
+    "complexity": "Topological traversal is O(V+E) time with O(V+E) graph storage.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Parsing & Data Formats",
+    "title": "Respect the grammar",
+    "overview": "Delimiters can appear inside quoted or escaped fields. A format parser tracks state that a simple split operation cannot.",
+    "invariant": "The meaning of a character depends on its quoting and escaping context.",
+    "pitfalls": "Quoted separators, escaped quotes, empty fields, trailing newlines and malformed records deserve separate tests.",
+    "complexity": "A streaming parser is generally O(n) time; memory depends on record size and retained output.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Queues & Reliability",
+    "title": "A lease is temporary ownership",
+    "overview": "A queue separates acceptance from execution. Workers claim a job for a bounded time, acknowledge success and recover abandoned work.",
+    "invariant": "Only the current unexpired lease may commit a result. Side effects should tolerate a retry.",
+    "pitfalls": "A timed-out worker can finish late. Use a fencing token to stop that stale result from overwriting a newer one.",
+    "complexity": "Queue lookup depends on indexing; measure backlog, retries and processing latency separately.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Search & Text Indexing",
+    "title": "Normalize query and index consistently",
+    "overview": "An inverted index maps a token to the documents that contain it. Query semantics decide how posting lists combine.",
+    "invariant": "Apply the same tokenization and normalization rules while indexing and searching.",
+    "pitfalls": "Mixing union with intersection changes AND/OR semantics. Repeated tokens and empty queries need definitions.",
+    "complexity": "Building the index is proportional to token occurrences. Query cost depends on the posting lists visited.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Unicode & Identity",
+    "title": "Text equality is a product decision",
+    "overview": "Visually similar strings can use different Unicode sequences. Define normalization and case matching rules for each field.",
+    "invariant": "Use the same canonicalization at storage, lookup and uniqueness boundaries while retaining display text when needed.",
+    "pitfalls": "Lowercasing alone may not implement caseless matching. Normalization does not make visually similar characters identical or trustworthy.",
+    "complexity": "Normalization and comparison generally scan the string; transformed length can differ from input length.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  },
+  {
+    "topic": "Validation & Types",
+    "title": "Validate meaning as well as shape",
+    "overview": "A value can have the right type and still be invalid for the domain. Validate ranges, required relationships and unknown fields explicitly.",
+    "invariant": "Only validated domain values cross into mutation logic.",
+    "pitfalls": "Truthiness is not a type check. Boolean values, numeric strings, nulls and missing values may need different handling.",
+    "complexity": "Validation cost follows the number and size of fields inspected; nested data needs depth-aware handling.",
+    "steps": [
+      "Write down the contract and what must remain true.",
+      "Trace a small normal input and a boundary input by hand.",
+      "Find the first step where actual state diverges from that rule.",
+      "Make the smallest repair, then test normal, empty and adversarial cases where the contract permits them.",
+      "Explain the cause and why the repair preserves the rule."
+    ]
+  }
+]

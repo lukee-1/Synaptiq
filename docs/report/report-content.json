@@ -1,0 +1,53 @@
+{
+  "title": "Synaptiq Interactive Debugging Learning System",
+  "date": "24 November 2026",
+  "repository": "https://github.com/lukee-1/Synaptiq",
+  "source_commit": "PENDING_SOURCE_COMMIT",
+  "abstract": "Synaptiq is an interactive workspace for learners who can obtain an AI-generated correction but may struggle to explain why it works. Building on an earlier literature review about AI assistance and beginner debugging, the project combines fault diagnosis, code editing, executed tests and written reflection. Learners can practise with clues, complete timed assessments, or import a file and ask a coding assistant for a reversible repair. Before/after comparisons and downloadable notes make the response inspectable. The implemented system uses a Next.js interface, FastAPI, Supabase persistence, isolated Python execution and a local Unsloth Qwen3.5-4B model. Its automatic rating separates code evidence from AI judgements of diagnosis and explanation. The current scope is a working local prototype with authenticated workflows, 44 concepts and 28 learning tracks. Automated and browser checks demonstrate functional behaviour, but do not establish learning gains. Public hosting, broader model evaluation and a study of later independent debugging remain future work.",
+  "sections": [
+    {
+      "heading": "Problem and project scope",
+      "paragraphs": [
+        "My Assignment 1 review, Learning to Debug with AI Assistance, distinguished completing a programming task from understanding the repair. Prather et al. (2024) observed that struggling novices could finish with an inflated impression of their competence. This informed the central design decision: Synaptiq keeps the learner's diagnosis, executed result and explanation visible as separate evidence. A green test result alone should not imply that the learner can diagnose a similar fault independently.",
+        "The developed scope is a local web application for Python debugging practice and selected-file project assistance. It contains 44 concepts, 208 scenario exercises and notes for 28 tracks. The scenarios are instructional examples, not records of real production incidents. Timed assessments, authentication, persistence and AI requests are implemented. The system does not train a model, execute imported projects or autonomously repair an entire repository. Those boundaries keep the demonstration understandable and the claims testable."
+      ]
+    },
+    {
+      "heading": "Learning interaction and feedback",
+      "paragraphs": [
+        "The challenge flow asks what caused the fault before code testing and why the repair works afterwards. This supports metacognition by making learners articulate and revisit their understanding. Kazemitabaar et al. (2025) investigated engagement techniques that make learners reason before revealing generated code. Synaptiq applies the underlying idea through diagnosis and reflection, without claiming to reproduce their intervention or results. Clues remain optional because forcing a complete explanation before any help can obstruct a learner who is already stuck.",
+        "Practice and assessment now have different purposes. Practice permits staged clues and AI guidance; assessments use a server-controlled deadline and withhold five hidden cases until submission. Repeated topic cards were consolidated into one concept with a scenario selector. This reduces repetitive navigation while retaining different contexts. The design applies recognition rather than recall: topic names, available scenarios and saved answers remain visible, reducing the need to remember information from earlier screens (Nielsen, 1994).",
+        "The original selectable confidence control was replaced after feedback requested an automatic rating, including written reasoning. The composite uses 60% verified code score, 20% diagnosis and 20% final explanation; clues deduct from the code component. These weights express a design priority, not an empirically validated scale. Showing all three components exposes disagreement between working code and weak reasoning. The interface labels model scores as estimates and supplies the rubric so that learners can question a result."
+      ]
+    },
+    {
+      "heading": "Assistance and user control",
+      "paragraphs": [
+        "Imported-project assistance begins with the learner describing expected behaviour and selecting a file. The model proposes exact edits against a saved revision. The application checks that each replacement has one matching location, validates Python or JSON syntax where applicable, and rejects stale revisions. Automatic apply is visible and can be disabled. Before/after views, manual apply and Undo implement user control and freedom, while revision checks support error prevention (Nielsen, 1994). Syntax validation is explicitly weaker than a successful execution test.",
+        "Visible queued, running, saved and completed states address visibility of system status. They matter because local inference can take noticeably longer than an interface action. Searchable notes provide a second route to help, with invariants, pitfalls and practice steps that can be downloaded as Markdown. This keeps conceptual support available beyond a chatbot response. The dark interface and restrained animation provide continuity, but functional feedback, readable labels and reduced-motion support take priority over visual effects."
+      ]
+    },
+    {
+      "heading": "System structure and interaction examples",
+      "paragraphs": [
+        "Figure 1 separates interface, API, database, worker, model and executor responsibilities. Supabase verifies identity and restricts records by ownership. FastAPI validates inputs and queues immutable run snapshots. Separate worker consumers handle grading, tutoring, repairs and reflection, so slow model responses do not block assessment deadlines. Challenge code executes inside a bounded WASI runtime without host filesystem, network or process access. The local language model produces guidance, edits and reasoning scores; it does not decide authorization or write arbitrary database grades.",
+        "The illustrated journeys show three developed interactions. A learner describes an incorrect addition function, reviews its repair and can undo it. Another submits a prefix-sum assessment, sees seven passing checks, and receives separate reasoning feedback. A third searches for Unicode guidance and downloads a note. Each journey shows a user action, an observable system response and an available next step. These are demonstrations using test inputs, not evidence from a participant study."
+      ]
+    },
+    {
+      "heading": "Development evidence and reflection",
+      "paragraphs": [
+        "Development moved from a visually promising prototype to connected workflows. Reported problems included identical practice and assessment screens, restrictive imports, inactive help controls and an unavailable executor. The rebuild introduced distinct flows, staged uploads, durable jobs and isolated execution. Later feedback expanded project inspection into conversational repairs and restored learning notes. A final browser review exposed duplicated login notices and an unintended redirect from the registration screen; both were corrected. The README links the development record rather than presenting these stages as fabricated historical commits.",
+        "Verification includes 69 backend tests, nine frontend tests, five database regression suites and four real-model calibration cases. Type checking, linting and the production build passed. Browser checks verified repair, Undo, manual apply, note downloads and assessment submission. A correct prefix-sum attempt produced 4.80/5. In a negative check, correct Unicode code with one clue but irrelevant written answers produced 2.88/5, showing that passing tests did not automatically award strong reasoning scores.",
+        "Testing also exposed a substantive AI limitation: the initial 2B model misjudged explanations and followed requests for higher scores. It was replaced with a verified 4B model, constrained score output and application-owned rubric feedback. The small calibration set now passes, but this cannot establish robustness across learners or prompts. The main development lesson is to test the interaction and its evidence, not merely successful requests. Next steps are a learner study with delayed transfer tasks, broader scoring evaluation, account-level email checks and hosted service provisioning. No learning improvement or production readiness is claimed."
+      ]
+    }
+  ],
+  "references": [
+    {"text": "Kazemitabaar, M., Huang, O., Suh, S., Henley, A.Z. and Grossman, T. (2025) Exploring the design space of cognitive engagement techniques with AI-generated code for enhanced learning. Proceedings of IUI 2025. ACM.", "url": "https://doi.org/10.1145/3708359.3712104", "access": "Author manuscript: https://arxiv.org/abs/2410.08922"},
+    {"text": "Nielsen, J. (1994; updated 2024) 10 usability heuristics for user interface design. Nielsen Norman Group.", "url": "https://www.nngroup.com/articles/ten-usability-heuristics/"},
+    {"text": "Prather, J. et al. (2024) The widening gap: The benefits and harms of generative AI for novice programmers. Proceedings of ICER 2024, Volume 1. ACM.", "url": "https://doi.org/10.1145/3632620.3671116", "access": "Author manuscript: https://juholeinonen.com/assets/pdf/prather2024widening.pdf"},
+    {"text": "Unsloth (2026) Qwen3.5-4B-GGUF model repository. Local inference weights; not trained in this project.", "url": "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF"}
+  ],
+  "acknowledgement": "The product idea, original exercises and sixteen note topics were adapted from the supplied Synaptiq v5 prototype. The earlier Assignment 1 review informed the problem framing. OpenAI Codex/ChatGPT assisted with implementation, tests, diagrams and report drafting; checks and corrections are recorded in the README. No tutor feedback or participant-study findings are claimed."
+}

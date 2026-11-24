@@ -1,0 +1,43 @@
+name: Validate Synaptiq
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.5"
+          enable-cache: true
+      - run: npm ci
+      - run: npm --prefix frontend ci
+      - run: uv sync --locked --project backend
+      - run: uv run --project backend ruff check backend/app backend/tests backend/executor
+      - run: uv run mypy app executor/main.py --strict
+        working-directory: backend
+      - run: uv run --project backend python scripts/prepare-executor.py
+      - run: uv run pytest
+        working-directory: backend
+      - run: uv run --project backend python scripts/verify-catalog.py
+      - run: npm run contracts -- --check
+      - run: npm --prefix frontend run typecheck
+      - run: npm --prefix frontend run lint
+      - run: npm --prefix frontend test
+      - run: npm --prefix frontend run build
+      - run: npm --prefix frontend audit --audit-level=high

@@ -1,0 +1,10 @@
+node_modules
+frontend/node_modules
+frontend/.next
+frontend/next-env.d.ts
+frontend/src/lib/generated-api.ts
+frontend/src/data/catalog.json
+backend
+supabase
+package-lock.json
+frontend/package-lock.json
