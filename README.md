@@ -11,7 +11,7 @@ An interactive debugging learning workspace rebuilt from the supplied Synaptiq v
 
 ## Technology
 
-Next.js App Router, strict TypeScript, Tailwind and Motion provide the interface. FastAPI/Pydantic validate requests and stream status over server-sent events. Supabase provides Auth, PostgreSQL, RLS and job storage. A Python worker, with separate lanes for grading, tutoring, repair and reasoning scores, calls a private Wasmtime/CPython WASI executor and a llama.cpp server using Unsloth Qwen3.5-4B GGUF locally. No paid model endpoint is required.
+Next.js App Router, strict TypeScript, Tailwind and Motion provide the interface. FastAPI/Pydantic validate requests and stream status over server-sent events. Supabase provides Auth, PostgreSQL, RLS and job storage. A Python worker, with separate lanes for grading, tutoring, repair and reasoning scores, calls a private Wasmtime/CPython WASI executor.
 
 The evidence rating combines 60% executed code score, 20% AI diagnosis and 20% AI explanation, and is calculated in SQL. Clues reduce the code component. The weighting is a design choice, and AI scores are estimates, not validated measures of mastery.
 
